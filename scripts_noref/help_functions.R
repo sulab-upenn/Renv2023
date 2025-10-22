@@ -580,7 +580,7 @@ make.z_norm_pheatmap = function (dat,
                                  file.name = paste0("Pheatmap by ", sample.col, ".png"),
                                  plot.title = paste0(sample.col, " heatmap"), 
                                  transpose = FALSE, 
-                                 normalise = TRUE, 
+                                 normalise = FALSE, 
                                  is.fold = FALSE, 
                                  fold.range = NULL, dendrograms = "both", dendrograms.sort = FALSE, 
                                  cutree_rows = 1, cutree_cols = 1, row.sep = c(), col.sep = c(), 
@@ -831,4 +831,22 @@ make.z_norm_pheatmap = function (dat,
                      filename = flnm)
   message(paste0("A pheatmap has been saved to your working directory", 
                  paste0(path, file.name)))
+}
+
+run_with_fallback <- function(expr_primary, expr_fallback, verbose = TRUE) {
+  tryCatch(
+    {
+      if (verbose) message("Running primary function...")
+      result <- eval(expr_primary, envir = parent.frame())
+      if (verbose) message("Primary function succeeded.")
+      return(result)
+    },
+    error = function(e) {
+      message("Primary function failed: ", e$message)
+      message("Running fallback function...")
+      fallback_result <- eval(expr_fallback, envir = parent.frame())
+      message("allback function completed.")
+      return(fallback_result)
+    }
+  )
 }

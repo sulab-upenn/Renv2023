@@ -197,24 +197,28 @@ run.spectre_noref <- function (phenok,
   setwd("Output 2.2 - fine alignment")
   
   # use it current environment! 
-  cytnrm <- prep.cytonorm(dat = cell.dat,
-                          cellular.cols = cellular.cols,
-                          cluster.cols = cluster.cols,
-                          batch.col = batch.col,
-                          sample.col=sample.col,
-                          xdim = 10,
-                          ydim = 10,
-                          meta.k = 5)  # 10 is the default for meta.k
+  
+  cytnrm = run_with_fallback(expr_primary = 
+                               quote(prep.cytonorm(dat = cell.dat,
+                                                   cellular.cols = cellular.cols,
+                                                   cluster.cols = cluster.cols,
+                                                   batch.col = batch.col,
+                                                   sample.col=sample.col,
+                                                   xdim = 10,
+                                                   ydim = 10,
+                                                   meta.k = 5)),
+                             
+                             expr_fallback = quote(amshaw(dat = cell.dat,
+                                                          cellular.cols = cellular.cols,
+                                                          cluster.cols = cluster.cols,
+                                                          batch.col = batch.col,
+                                                          sample.col=sample.col,
+                                                          xdim = 10,
+                                                          ydim = 10,
+                                                          meta.k = 5))
+  )
+
   message("prep cytonorm w/o reference")
-  # in the old environment!
-  # cytnrm <- amshaw(dat = cell.dat,
-  #                         cellular.cols = cellular.cols,
-  #                         cluster.cols = cluster.cols,
-  #                         batch.col = batch.col,
-  #                         sample.col=sample.col,
-  #                         xdim = 10,
-  #                         ydim = 10,
-  #                         meta.k = 5)  # 10 is the default for meta.k
 
   cytnrm.sub <- cytnrm$dt
 
