@@ -185,7 +185,7 @@ run.spectre2 <- function (phenok,
       dir.create("Output 2.1 - pre-Align plots", showWarnings = F)
       setwd("Output 2.1 - pre-Align plots")
 
-      name.ref.group = cell.dat %>% filter(Sample %in% ref.ctrls ) %>% select(Group) %>% table %>% names %>% unique ## group name of ref
+      name.ref.group = cell.dat %>% dplyr::filter(Sample %in% ref.ctrls ) %>% select(Group) %>% table %>% names %>% unique ## group name of ref
       message(paste0("reference group name is ", name.ref.group))
       ### Pre-alignment UMAP
       sub <- subset(cell.dat,Group!=name.ref.group) # excluding the bulk CD4 which are used for batch control
@@ -395,7 +395,39 @@ run.spectre2 <- function (phenok,
     make.cytofheatmap(exp,"fastPG_Clusters", plot.cols = cellular.cols,normalise=FALSE,standard.colours = "rev(RdBu)")
   } else {
     make.pheatmap(exp,"fastPG_Clusters", plot.cols = cellular.cols,normalise=T, standard.colours = "rev(RdBu)")
-    pheatmap(as.matrix(exp),filename = "fastPG_Clusters_znorm.png", scale = "row", labels_row = exp$fastPG_Clusters, show_rownames = T)
+
+    dat <- as.data.frame(exp)
+    rownames(dat) <- paste0("Cluster_", dat$fastPG_Clusters)
+    
+    # Select only marker columns
+    marker_cols <- grep("_asinh_aligned$", names(dat), value = TRUE)
+    
+    # Extract and z-normalize each column (by column)
+    mat_z <- dat[, marker_cols] %>%
+      scale(center = TRUE, scale = TRUE) %>%
+      as.matrix()
+    
+    # Optionally, make rownames reflect cluster IDs
+    rownames(mat_z) <- paste0(dat$fastPG_Clusters)
+    
+    # Average across same cluster (if multiple rows per cluster)
+    mat_z_mean <- aggregate(mat_z, by = list(Cluster = rownames(mat_z)), FUN = mean)
+    rownames(mat_z_mean) <- mat_z_mean$Cluster
+    mat_z_mean <- mat_z_mean[, -1]
+    
+    # Draw heatmap
+    pheatmap(
+      mat_z_mean,
+      cluster_rows = TRUE,
+      cluster_cols = TRUE,
+      scale = "none",        # already z-normalized
+      color = colorRampPalette(c("navy", "white", "firebrick3"))(31),
+      fontsize_row = 10,
+      fontsize_col = 9,
+      border_color = NA, filename = "fastPG_Clusters_znorm.png"
+    )
+    
+    
   }
   message("heatmap generated")
   
