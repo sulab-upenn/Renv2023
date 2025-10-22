@@ -295,6 +295,7 @@ run.spectre_noref <- function (phenok,
     setwd(Output2Directory)
     setwd("Output 2.2 - fine alignment")
     cell.dat = read.table("cell.dat_allAligned.csv", sep = ",", header = T) 
+    cell.dat = cell.dat %>% as.data.table()
     message("reload from previous data")
     }
   

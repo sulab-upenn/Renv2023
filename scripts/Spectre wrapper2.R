@@ -4,7 +4,6 @@
 ## Flowcytometry analysis with Spectre package.
 ## data/ : include all .fcs files
 ## metadata/ : include sample.details.csv, with have sample, group, batch, and donor information.
-## version: Spectre==1.3, flowCore==2.16, FlowSOM==2.13.11, dplyr==1.1.4, CytoNorm==2.0.9 stringr==1.5.2
 ## source
 
 # Finds the directory where this script is located
@@ -13,8 +12,8 @@ setwd(directory)
 print(paste("Current working directory:", getwd()))
 
 source_dir = .libPaths()[1]
-source(paste0(source_dir, "/../../../../../scripts/run.spectre2.R"))
-source(paste0(source_dir, "/../../../../../scripts/help_functions.R"))
+source(paste0(source_dir, "/../../../../scripts/run.spectre2.R"))
+source(paste0(source_dir, "/../../../../scripts/help_functions.R"))
 # source("run.spectre2.R")
 # source("help_functions.R")
 

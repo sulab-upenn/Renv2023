@@ -7,17 +7,16 @@
 ## metadata/ : include sample.details.csv, with have sample, group, batch, and donor information.
 
 ## This version doesn't need the reference cells for batch. If you have, don't use this code.
-## version: Spectre==1.3, flowCore==2.16, FlowSOM==2.13.11, dplyr==1.1.4, CytoNorm==2.0.9 stringr==1.5.2
 
 ## check your project is in the JJ_R_Env
 ## source
-source("run.spectre_noref.R")
-source("help_functions.R")
-
-# Finds the directory where this script is located
 directory <- dirname(rstudioapi::getActiveDocumentContext()$path) 
 setwd(directory)  
 print(paste("Current working directory:", getwd()))
+
+source_dir = .libPaths()[1]
+source(paste0(source_dir, "/../../../../scripts_noref/run.spectre_noref.R"))
+source(paste0(source_dir, "/../../../../scripts_noref/help_functions.R"))
 
 # User Customization ----------------------------------------------------
 #define your parameters and file input location
