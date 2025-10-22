@@ -354,7 +354,39 @@ run.spectre_noref <- function (phenok,
     make.cytofheatmap(exp,"fastPG_Clusters", plot.cols = cellular.cols,normalise=FALSE,standard.colours = "rev(RdBu)")
   } else {
     make.pheatmap(exp,"fastPG_Clusters", plot.cols = cellular.cols,normalise=T, standard.colours = "rev(RdBu)")
-    make.z_norm_pheatmap(exp,"fastPG_Clusters_znorm", plot.cols = cellular.cols,normalise=F, standard.colours = "rev(RdBu)")
+    
+    
+    dat <- as.data.frame(exp)
+    rownames(dat) <- paste0("Cluster_", dat$fastPG_Clusters)
+    
+    # Select only marker columns
+    marker_cols <- grep("_asinh_aligned$", names(dat), value = TRUE)
+    
+    # Extract and z-normalize each column (by column)
+    mat_z <- dat[, marker_cols] %>%
+      scale(center = TRUE, scale = TRUE) %>%
+      as.matrix()
+    
+    # Optionally, make rownames reflect cluster IDs
+    rownames(mat_z) <- paste0(dat$fastPG_Clusters)
+    
+    # Average across same cluster (if multiple rows per cluster)
+    mat_z_mean <- aggregate(mat_z, by = list(Cluster = rownames(mat_z)), FUN = mean)
+    rownames(mat_z_mean) <- mat_z_mean$Cluster
+    mat_z_mean <- mat_z_mean[, -1]
+    
+    # Draw heatmap
+    pheatmap(
+      mat_z_mean,
+      cluster_rows = TRUE,
+      cluster_cols = TRUE,
+      scale = "none",        # already z-normalized
+      color = colorRampPalette(c("navy", "white", "firebrick3"))(31),
+      fontsize_row = 10,
+      fontsize_col = 9,
+      border_color = NA, filename = "fastPG_Clusters_znorm.png"
+    )
+    
   }
   message("heatmap generated")
   
