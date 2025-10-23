@@ -57,7 +57,9 @@ run.spectre2 <- function (phenok,
   
   # markers with column Channel.name and markers please remove strange characters 
   markers <- read.csv(markerFile) #! match meta file 
-  markers[,1] = stringr::str_sub(markers[,1], start = 1,end = -2)
+  markers[,1] =  markers[,1] %>%
+    stringr::str_replace_all("[^[:print:]]", "") %>%  # remove hidden / non-printable chars
+    stringr::str_trim(side = "both") 
   markerLength <- as.numeric(length((markers[,2])))
   colnames<- append(markers[,2], c("FileName","FileNo"))
   

@@ -51,23 +51,23 @@ run.spectre_noref <- function (phenok,
   message("data imported")
   #if cytof files, truncate max range in flowcore read.fcs is set to false
   
-  # markers with column Channel.name and markers please remove strange characters ######################## rewrite
+  # markers with column Channel.name and markers please remove strange characters 
   markers <- read.csv(markerFile) #! match meta file 
-  markers$Channel.name = stringr::str_sub(markers$Channel.name, start = 1,end = -2)
+  markers[,1] =  markers[,1] %>%
+    stringr::str_replace_all("[^[:print:]]", "") %>%  # remove hidden / non-printable chars
+    stringr::str_trim(side = "both") 
   markerLength <- as.numeric(length((markers[,2])))
   colnames<- append(markers[,2], c("FileName","FileNo"))
+  
   message("metadata imported")
-  ########################################################################################################
   
-  data.list2 = lapply(data.list, rename_columns,markers)
+  data.list = lapply(data.list, rename_columns,markers)
   
-  check <- do.list.summary(data.list2)
-  
+  #check <- do.list.summary(data.list2)
   ### Merge data
   
-  cell.dat <- Spectre::do.merge.files(dat = data.list2)
+  cell.dat <- Spectre::do.merge.files(dat = data.list)
   
-  rm(data.list2)
   message("data merged")
   
   ##############################################################################
